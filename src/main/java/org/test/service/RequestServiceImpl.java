@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -48,16 +49,17 @@ public class RequestServiceImpl implements RequestService {
     }
 
     /**
-     * Метод обределяет какой баннер показать пользователю: баннер с максимальной ценой, который пользователю сегодня
+     * Метод обределяет какой баннер показать пользователю: не удаленный баннер с максимальной ценой, который пользователю сегодня
      * еще не показывали на этом устройстве
      * @param requestName - поиск баннеров осуществляется по категории
      * @param userAgent - User-Agent проверяется устройство пользователя на котором должен показываться баннер
      * @return возвращается текст баннера
      */
     @Override
-    public String getBannerText(String requestName, String userAgent) {
+    public String getBannerText(String requestName, String userAgent, String ip) {
         Category category = categoryRepository.findByRequestName(requestName);
         List<Banner> banners = bannerRepository.findAllByCategoryId(category);
+        banners.removeIf(Banner::isDeleted);
         List<Request> requests = requestRepository.findAll();
         LocalDate date = LocalDate.now();
         String content;
@@ -83,7 +85,9 @@ public class RequestServiceImpl implements RequestService {
             if (request.getDate().equals(date)) {
                 if (request.getBannerId().getContent().equals(banner.getContent())) {
                     if (userAgent.equals(request.getUserAgent())) {
-                        bannerList.remove(banner);
+                        if (ip.equals(request.getIpAddress())){
+                                bannerList.remove(banner);
+                        }
                     }
                 }
             }

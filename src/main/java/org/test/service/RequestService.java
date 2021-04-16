@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface RequestService {
 
-    String getBannerText(String requestName, String userAgent);
+    String getBannerText(String requestName, String userAgent, String ip);
 
     Request getOne(Long id);
 

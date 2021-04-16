@@ -40,7 +40,7 @@ public class RequestController {
     @GetMapping("/content")
     public ResponseEntity<?> newRequest(@RequestHeader(value = "User-Agent")String userAgent,
                                         @RequestParam(value = "requestName") String requestName){
-        String content = requestService.getBannerText(requestName, userAgent);
+        String content = requestService.getBannerText(requestName, userAgent, requestService.getClientIP());
         if(content!=null){
             Request request = new Request();
             request.setDate(LocalDate.now());
